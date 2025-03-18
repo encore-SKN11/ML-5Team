@@ -75,6 +75,9 @@
 ### Kaggle - **TMDB 5000 Movie Dataset**
 - TMDB에서 제공하는 영화 데이터
 
+### Kaggle - **The Ultimate 1Million Movies Dataset**
+- TMDB에서 제공하는 영화 데이터
+
 <br/>
 
 ## **데이터 구성**
@@ -85,6 +88,9 @@
 2. **tmdb_5000_credits.csv**
    - 영화의 크레딧 정보를 포함
    - ex) **감독, 배우 정보 등**
+3. **tmdb_all_credits.csv**
+   - 영화의 기본 정보 및 크레딧 정보를 포함
+   - ex) **제작비, 수익, 장르, 평점, 감독, 배우 정보 등**
 
 <br/>
 
