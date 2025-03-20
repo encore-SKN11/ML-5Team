@@ -61,11 +61,10 @@ df['success'] = df['ROI'].apply(lambda x: 1 if x >= 100 else 0)
 ```pyhon
 df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budget','revenue','release_date','profit','popularity'],axis=1,inplace=True) 
 ```
-불필요한 특성들을 제거하여 모델 학습에 필요한 정보만 남깁니다.
+불필요한 특성들을 제거하여 모델 학습에 필요한 정보만 남깁니다.</br>
   #### RandomForest
   #### 모델 튜닝
   - **최적 파라미터**:
-  - `n_estimators`와 `max_depth` 파라미터 값을 최적화하기 위해 탐색했습니다.  
     - `n_estimators`: **100,200,300,400,500,600** 으로 테스트  
     - `max_depth`: **3,4,5,6,7**로 테스트 </br> 
 
@@ -95,9 +94,9 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다.
 
-> #### 예측 결과
+> #### 분류 결과
 
- #### RandomForest
+ #### XGBoost
 #### 모델 튜닝
 #### 최적화 파라미터
 - **`n_estimators`**: 500부터 800까지 100 단위로 탐색
@@ -105,11 +104,6 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 - **`learning_rate`**: 0.01, 0.05, 0.1, 0.15, 0.2의 값을 실험
 - **`subsample`**:  0.7, 0.8, 0.9로 설정하여 샘플의 일부만 학습에 사용하여 과적합을 방지
 - **`colsample_bytree`**: 0.7, 0.8, 1.0. 각 트리를 학습할 때 사용할 특성(열)의 비율을 지정
-
-#### RandomizedSearchCV를 사용한 최적화
-`RandomizedSearchCV`는 주어진 하이퍼파라미터의 값 중에서 무작위로 선택하여 모델을 학습하고 성능을 평가하는 방법입니다. 이를 통해 많은 하이퍼파라미터 조합을 빠르게 탐색할 수 있습니다.
-
-- **n_iter=60**: 60개의 랜덤 하이퍼파라미터 조합을 시도했습니다.
 
 - `subsample`: 0.7, `n_estimators`: 700, `max_depth`: 3, `learning_rate`: 0.01, `colsample_bytree`: 0.8 에서 성능이 가장 우수했습니다.</br>
 
@@ -133,7 +127,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다. 
 
-> #### 예측 결과
+> #### 분류 결과
 
 </br></br>
 
