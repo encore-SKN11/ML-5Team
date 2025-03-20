@@ -102,7 +102,9 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
     - `subsample`:  0.7, 0.8, 0.9로 설정하여 샘플의 일부만 학습에 사용하여 과적합을 방지
     - `colsample_bytree`: 0.7, 0.8, 1.0. 각 트리를 학습할 때 사용할 특성(열)의 비율을 지정
     - `subsample = 0.7`, `n_estimators = 700`, `max_depth = 3`, `learning_rate = 0.01`, `colsample_bytree = 0.8` 에서 성능이 가장 우수했습니다.</br>
-
+  - **특성 선택**:
+    - RandomForest와 동일하게 진행했습니다.
+    - 
 #### 모델 성능
 #### 초기 ( 파라미터 기본값 )
 | **평가 지표**   |  **train**  |  **test**  | **5-fold 교차 검증** |
@@ -123,7 +125,21 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다. 
 
-</br></br>
+#### 최종 흥행 여부 분류 모델 선정  
+
+| **모델**         | **Test F1 Score** | **5-fold 교차 검증 F1 Score** |
+|------------------|------------------|-----------------------------|
+| **RandomForest**  | 0.68             | 0.69                        |
+| **XGBoost**       | 0.69             | 0.67                        |
+
+교차 검증에서 **F1-score**가 가장 높았던 **RandomForestClassifier**를 최종 모델로 선정했습니다.  
+
+#### ✅ 평가 지표 선정 이유  
+- **투자자 관점(Precision)**: 수익성이 없는 영화를 성공으로 잘못 예측(False Positive)하면 큰 손실을 초래할 수 있어 정밀도가 중요합니다.  
+- **제작사 관점(Recall)**: 성공 가능성이 있는 영화를 실패로 잘못 예측(False Negative)하면 기회를 놓칠 수 있어 재현율이 중요합니다.  
+- **균형적 접근(F1-score)**: Precision과 Recall 간 균형을 맞추기 위해 최종 평가 지표로 사용했습니다.
+  
+</br>
 
 ### 📍 수익 예측 모델
 > #### 데이터 추가 전처리
