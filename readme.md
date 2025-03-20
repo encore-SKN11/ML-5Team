@@ -171,7 +171,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
     ![rdc_eval](img/resized_rdc_evaluation.png)
 </br>
 
-    > 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행</br>
+    > 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행
     > ➡️ 초기 모델에 비해 일반화 `성능이 향상`
 
 - #### XGBoost 모델 튜닝
