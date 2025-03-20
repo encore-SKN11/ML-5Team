@@ -315,7 +315,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 	 ✔️ **eps = 0.9** : 모든  `min_samples`  값에서 가장 높은 실루엣 점수
  
      ![eps_min_samples](./img/eps_min_samples.png) 
-	 ✔️ **min_samples = 5~10** : 그래프에서 급격한 변화가 나타나는 지점은 약 **5~10** 근처
+	 <br/>✔️ **min_samples = 5~10** : 그래프에서 급격한 변화가 나타나는 지점은 약 **5~10** 근처
 
 6. #### 예측 결과
 
