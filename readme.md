@@ -222,8 +222,8 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
   - covid19 이전 개봉한 영화의 데이터를 학습하여, 코로나 시기에 개봉한 영화들의 수익 잠재력을 예측
 
 ### 1. 모델 선정
- - EDA 리뷰 지표 기준 수익과 관련된 feature들은 선형성을 띔
    - #### Linear Regressor
+     - EDA 리뷰 지표 기준 수익과 관련된 feature들은 선형성을 띔
    - #### Random Forest Regressor
      - 영화의 흥행 여부는 여러 요인이 복합적으로 작용<br/>
      - 복잡한 관계를 잘 다룰 수 있는 모델 필요
