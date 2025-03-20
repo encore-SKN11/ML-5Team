@@ -96,12 +96,12 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
  #### XGBoost
 #### 모델 튜닝
   - **최적 파라미터**:
-    - **`n_estimators`**: 500부터 800까지 100 단위로 탐색
-    - **`max_depth`**: 3부터 4까지 탐색
-    - **`learning_rate`**: 0.01, 0.05, 0.1, 0.15, 0.2의 값을 실험
-    - **`subsample`**:  0.7, 0.8, 0.9로 설정하여 샘플의 일부만 학습에 사용하여 과적합을 방지
-    - **`colsample_bytree`**: 0.7, 0.8, 1.0. 각 트리를 학습할 때 사용할 특성(열)의 비율을 지정
-    - `subsample`: 0.7, `n_estimators`: 700, `max_depth`: 3, `learning_rate`: 0.01, `colsample_bytree`: 0.8 에서 성능이 가장 우수했습니다.</br>
+    - `n_estimators`: 500부터 800까지 100 단위로 탐색
+    - `max_depth`: 3부터 4까지 탐색
+    - `learning_rate`: 0.01, 0.05, 0.1, 0.15, 0.2의 값을 실험
+    - `subsample`:  0.7, 0.8, 0.9로 설정하여 샘플의 일부만 학습에 사용하여 과적합을 방지
+    - `colsample_bytree`: 0.7, 0.8, 1.0. 각 트리를 학습할 때 사용할 특성(열)의 비율을 지정
+    - `subsample = 0.7`, `n_estimators = 700`, `max_depth = 3`, `learning_rate = 0.01`, `colsample_bytree = 0.8` 에서 성능이 가장 우수했습니다.</br>
 
 #### 모델 성능
 #### 초기 ( 파라미터 기본값 )
