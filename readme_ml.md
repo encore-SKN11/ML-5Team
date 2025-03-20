@@ -104,7 +104,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
     - `subsample = 0.7`, `n_estimators = 700`, `max_depth = 3`, `learning_rate = 0.01`, `colsample_bytree = 0.8` 에서 성능이 가장 우수했습니다.</br>
   - **특성 선택**:
     - RandomForest와 동일하게 진행했습니다.
-    - 
+     
 #### 모델 성능
 #### 초기 ( 파라미터 기본값 )
 | **평가 지표**   |  **train**  |  **test**  | **5-fold 교차 검증** |
@@ -125,7 +125,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다. 
 
-#### 최종 흥행 여부 분류 모델 선정  
+### 최종 흥행 여부 분류 모델 선정  
 
 | **모델**         | **Test F1 Score** | **5-fold 교차 검증 F1 Score** |
 |------------------|------------------|-----------------------------|
