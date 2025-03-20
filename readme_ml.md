@@ -67,8 +67,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
   - **최적 파라미터**:
     - `n_estimators`: **100,200,300,400,500,600** 으로 테스트  
     - `max_depth`: **3,4,5,6,7**로 테스트 </br> 
-
-  - `n_estimators = 100`,`max_depth = 7` 이 설정에서 성능이 가장 우수함
+    - `n_estimators = 100`,`max_depth = 7` 이 설정에서 성능이 가장 우수함
     
 - **특성 선택**:
   - `vote_average`, `vote_count`, `budget`, `genres`, `release_year`, `release_month`를 포함
@@ -93,8 +92,6 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 | **F1 Score**  | 0.73             | 0.68             | 0.69             |
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다.
-
-> #### 분류 결과
 
  #### XGBoost
 #### 모델 튜닝
@@ -126,8 +123,6 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 | **F1 Score**  | 0.69             | 0.69             | 0.67             |
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다. 
-
-> #### 분류 결과
 
 </br></br>
 
