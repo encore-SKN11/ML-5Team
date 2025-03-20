@@ -148,6 +148,7 @@ df['success'] = df['ROI'].apply(lambda x: 1 if x >= 100 else 0)
 ```
 - 영화 성공 여부 분류
   - ROI 값이 100 이상이면 성공(1), 그렇지 않으면 실패(0)로 간주
+  - 해당 기준은 사용자가 원하는 정도로 조정 가능 
 
 ```pyhon
 df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budget','revenue','release_date','profit','popularity'],axis=1,inplace=True) 
@@ -352,12 +353,12 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 - (프로젝트에서 얻은 주요 인사이트)
 
 ### 프로젝트 개선점
-- 더 많은 `feature`들을 개입시켜 학습시켜보기
-  - 원본 데이터에서 사용하지 않은 column들이 상당히 많은데, 해당 정보들을 사용하지 않고 버린 점이 아쉬웠음.
- 
-- 개봉 전에 알 수 있는 특성만으로 학습시켜보기
+
+- 개봉 전에 알 수 있는 특성만으로 학습하기
   - 프로젝트에서 사용한 `vote_count`, `popularity` 등의 특성은 개봉을 해야만 알 수 있음.
   - 따라서 프로젝트의 목표인 '개봉 전'을 상정한 모델이라면 그러한 것들이 없는 상태에서도 예측을 할 수 있어야 함.
  
-  
+- 특성 전처리 개선
+  - `budget`, `revenue` 이 한쪽으로 치우친 경향을 보이기 때문에, 해당 특성들에 로그 변환을 가해주면 추가적인 성능 향상을 기대할 수 있음.
+  - 학습에 사용된 특성 선택을 직관에 따라 극히 일부로 제한했는데, SelectKBest 같은 도구로 모든 특성에 대해 Label과 어느 정도의 연관성을 갖는지 수치화하여, 상위 특성들을 남기는 방법들을 사용할 수도 있음.
     
