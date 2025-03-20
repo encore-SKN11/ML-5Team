@@ -74,7 +74,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
   - 각 특성을 하나씩 제거해보았으나, 제거 시 모델 성능이 하락하여 모든 특성을 포함하는 것이 더 나은 결과를 얻었습니다.
   
 > #### 성능 평가
-![rdc_eval](img/rdc_evaluation.png)
+![rdc_eval](img/resized_rdc_evaluation.png)
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다.
 
@@ -91,7 +91,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
     - RandomForest와 동일하게 진행했습니다.
      
 #### 모델 성능
-![xgb_eval](img/xgb_evaluation.png)
+![xgb_eval](img/resized_xgb_evaluation.png)
 
 </br> 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행했습니다. 초기 모델에 비해 일반화 성능이 향상되었습니다. 
 
