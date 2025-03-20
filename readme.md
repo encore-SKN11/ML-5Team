@@ -211,7 +211,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
   - 성공 가능성이 있는 영화를 실패로 잘못 예측(False Negative)하면 기회를 놓칠 수 있음
 - **`균형적 접근(F1-score)`** : 최종 평가 지표로 사용
   - Precision과 Recall 간 균형을 맞추기 위함
-  
+
 </br>
 
 </br></br>
@@ -220,95 +220,118 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 ## 📍 수익 예측 모델
 - 만약, 코로나가 발생하지 않았다면 연도별 수익은 어떻게 나올까?
-  - covid19 이전 개봉한 영화의 데이터를 학습하여, 코로나 시기에 개봉한 영화들의 수익 잠재력을 예측
+  - covid19 이전(*~2019년*) 개봉한 영화의 데이터를 학습하여, 코로나 시기(*2020년~2023년4월*)에 개봉한 영화들의 수익 잠재력을 예측
 
 ### 1. 모델 선정
-   - #### Linear Regressor
-     - EDA 리뷰 지표 기준 수익과 관련된 feature들은 선형성을 띔
-   - #### Random Forest Regressor
+ - EDA 리뷰 지표 기준 수익과 관련된 feature들은 데이터 분포가 선형성을 띔
+   - #### `Linear Regressor`
+   - #### `Random Forest Regressor`
      - 영화의 흥행 여부는 여러 요인이 복합적으로 작용<br/>
      - 복잡한 관계를 잘 다룰 수 있는 모델 필요
+
+</br>
 
 ### 2. Feature 선정
  - profit/adjusted_revenue와 같이 revenue를 포함/조정하고 있는 데이터 제외
  - revenue와 상관관계가 높은/유의미한 feature 선정
    - `budget`, `popularity`, `vote_average`, `vote_count`
- - 연도/월 별 따른 패턴이나 장르가가수익에 영향을 미칠 수 있으므로 반영
+ - 연도/월 별 따른 패턴이나 장르가 수익에 영향을 미칠 수 있으므로 반영
    - `genres`, `release_year`, `release_month`
 
-### 2. 성능 평가
-- #### Linear Regressor : `test_size=0.25`, `random_state=4`의 경우가 과적합이 적고 Best
+</br>
+
+### 3. 성능 평가
+- #### Linear Regressor : `test_size=0.25`, `random_state=4`의 경우가 과적합이 적음
   - `test_size` : 0.1부터 0.3까지 0.05 단계씩 변경하면서 성능 확인
   - `random_state` : 0부터 50까지 변경하면서 성능 확인
     ![image](./img/linear_test.png)
 
 - #### Random Forest Regressor
-  - 
-![image](./img/revenue_by_year_before_covid19.png)
-- Random Forest Regressor 선정 결과
+  - **최적 파라미터** : `n_estimators = 150`,`max_depth = 7` 설정에서 성능 우수
+    - `n_estimators`: 100 ~ 300까지 50단위로 테스트  
+    - `max_depth`: 3 ~ 7로 테스트 </br> 
 
-### 3. 예측 결과
+    > | **파라미터** | **n_estimators** | **max_depth** | **결과** |
+    > |---|---|---|---|
+    > | **값** | default | default | ![image](./img/default_randomforest.png) |
+    > |  | 150 | 7 | ![image](./img/tuning_randomforest.png) |
+
+- #### Random Forest Regressor 선정 및 결과
+  ![image](./img/revenue_by_year_before_covid19.png)
+
+</br>
+
+### 3. 결과
 ![image](./img/covid19_result.png)
-- 2021년까지 코로나의 영향으로 영화 시장이 직접적으로 타격을 입음 (추가설명필요)
-- 2022년 부터 경기 회복으로 인해 영화 시장이 많이 회복되기 시작
-  - '아바타: 물의 길', '탑건: 매버릭'과 같은 대형 영화들이 대거 개봉
+- 2021년까지 코로나의 영향으로 극장 수익이 급감했기 때문에 실제 수익이 예측 수익보다 낮음
+  - TMDB 수익 데이터 기준 : 극장의 수익만 반영
+- 2022년 부터 코로나 규제 완화로 경기 회복 및 영화 시장이 많이 회복되기 시작
+  - 한국기준 2022년 4월18일 사회적 거리두기 해제
+    ![image](./img/covid19_end.png)
+  - '아바타: 물의 길', '탑건: 매버릭'과 같은 대형 영화들이 대거 개봉하여 수익 상승
+
 </br></br>
 
 
 
-### 📍 클러스터링 모델
-1. ####  클러스터링 모델 개발 이유
-	영화 데이터 분석 시에 feature 간의 관계가 비선형적이고 복잡한 것을 알 수 있었음.
-	이때, 클러스터링으로 수익과 연관이 있는 특성별로 데이터를 분리한 후 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음.
-	
-2. #### 모델 선정
- - **K-Means** : 영화 데이터를 비슷한 특징을 가진 영화 그룹(예: 고수익 영화, 저예산 독립 영화)을 식별하는 데 적합
+## 📍 클러스터링 모델
+ - 영화 데이터 분석 시에 feature 간의 관계가 비선형적이고 복잡
+ - 클러스터링으로 수익과 연관이 있는 특성별로 데이터를 분리한 후, 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음
+
+### 1. 모델 선정
+ - **`K-Means`**
+   - 영화 데이터를 비슷한 특징을 가진 영화 그룹을 식별하는 데 적합
+   - ex) 고수익 영화, 저예산 독립 영화
       
-- **DBSCAN** : 밀도가 높은 클러스터를 형성하고, 이상치를 분리하여 분석
+- **`DBSCAN`**
+  - 밀도가 높은 클러스터를 형성
+  - 이상치를 분리하여 분석
         
-3. #### Feature 선정
-	수익예측 모델에 훈련시킬 클러스터를 구분하는게 목적이기에 수익성에 따른 그룹을 군집화 하기 위해, revenue와 관련된 핵심 특성만 선택하여 훈련
-	- `budget`, `popularity`, `vote_average`, `vote_count`, `genres`
+<br/>
 
-4. #### 성능 평가
-- 클러스터링 모델 평가
-	| **클러스터링 모델** | **평가 지표** | **결과** | 
-	|--------------------------|---------------|---------|
-	| **K-Means** | Silhouette Score | 0.31 | 
-	| **DBSCAN** | Silhouette Score | 0.70 | 
+### 2. Feature 선정
+- `budget`, `popularity`, `vote_average`, `vote_count`, `genres`
+  - 수익예측 모델에 훈련시킬 클러스터를 구분하는게 목적
+  - 수익성에 따른 그룹을 군집화 하기 위해, revenue와 관련된 핵심 특성만 선택하여 훈련 
 
-- K-Means 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가
+<br/>
 
-   *평가 지표는 MSE, R2*
-| **LinearRegression** | **RandomForestRegressor** | 
+### 3. 성능 평가
+> | **클러스터링 모델** | **평가 지표** | **결과** | 
+> |--------------------------|---------------|---------|
+> | **K-Means** | Silhouette Score | 0.31 | 
+> | **DBSCAN** | Silhouette Score | 0.70 | 
+
+
+- K-Means 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가 (*평가 지표는 MSE, R2*)   
+  | **LinearRegression** | **RandomForestRegressor** | 
 	|--------------------------|--------------------|
 	| ![image](./img/km+lr.png) |  ![image](./img/km+rf.png) |
+<br/>
 
-- DBSCAN 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가
-
-   *평가 지표는 MSE, R2*
+- DBSCAN 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가 (*평가 지표는 MSE, R2*)
 	| **LinearRegression** | **RandomForestRegressor** | 
 	|--------------------------|----------------------|
 	| ![image](./img/db+lr.png)  |  ![image](./img/db+rf.png) | 
+<br/>
 
-
-5. #### 성능 향상을 위해 노력한 점
+#### 성능 향상을 위해 노력한 점
 - #### 특징 공학 : 차원 축소
   - 다중 레이블로 인코딩된 genres 특성을 포함한 데이터의 차원을 PCA를 통해 주요 3개의 차원으로 축소
-  
+
 	✔️ PCA 결과: 주요 차원이 전체 분산의 약 62%를 차지하므로, 데이터의 복잡성을 줄이는 데 성공
 
-- **K-Means** 파라미터 튜닝 
+- #### **K-Means** 파라미터 튜닝 
   - 최적의 파라미터 (`n_clusters`)를 찾기 위해 **Elbow Method**와 **Silhouette Score**를 활용  
 
     ![n_clusters](./img/n_clusters.png)  
 
-	1.  **엘보우 메서드 (왼쪽 그래프)**: k=3~6 근처에서 감소율이 완만해지는 경향이 보임
-	2.  **실루엣 점수 (오른쪽 그래프)**:  k=2에서 가장 높은 점수를 보이지만,  k=6도 비교적 높은 점수를 유지
+	1. **엘보우 메서드 (왼쪽 그래프)**: k=3~6 근처에서 감소율이 완만해지는 경향이 보임
+	2. **실루엣 점수 (오른쪽 그래프)**:  k=2에서 가장 높은 점수를 보이지만,  k=6도 비교적 높은 점수를 유지
 
 	✔️  최적의 클러스터 개수는  **6**
 
-- **DBSCAN** 파라미터 튜닝
+- #### **DBSCAN** 파라미터 튜닝
   - 최적의 파라미터 (`eps`, `min_samples`)를 찾기 위해 **k-거리 정렬**과 **Silhouette Score**를 활용  
 	 
 	 ![eps](./img/k-dist.png)  
@@ -317,28 +340,26 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
      ![eps_min_samples](./img/eps_min_samples.png) 
 	 <br/>✔️ **min_samples = 5~10** : 그래프에서 급격한 변화가 나타나는 지점은 약 **5~10** 근처
 
-6. #### 예측 결과
+<br/>
+
+### 4. 예측 결과
 
 - #### K-Means 클러스터링을 활용한 수익 예측  
-  - **Linear Regression**  
-  
+  - **Linear Regression**    
     ![KMeans_LR](./img/km+lr_pred.png)  
   
-  - **Random Forest Regressor**  
-  
+  - **Random Forest Regressor**    
     ![KMeans_RF](./img/km+rf_pred.png)  
 
 - #### DBSCAN 클러스터링을 활용한 수익 예측  
-  - **Linear Regression**  
-  
+  - **Linear Regression**    
     ![DBSCAN_LR](./img/db+lr_pred.png)  
   
-  - **Random Forest Regressor**  
-  
+  - **Random Forest Regressor**    
     ![DBSCAN_RF](./img/db+rf_pred.png)  
 	 </br>
 
-7. 결론
+### 5. 결론
 - 클러스터링을 적용한 후 회귀모델을 학습시키면 더 나은 성능을 보일 것이라고 예측했으나, 실제 결과는 그렇지 않았음.
 - 클러스터링 모델의 성능이 회귀모델의 성능에 비례할 것이라고 예상했으나, 이 역시 성립하지 않았음.
 
