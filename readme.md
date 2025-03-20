@@ -69,7 +69,6 @@
 
 # 📊 데이터셋 개요
 - **출처**: Kaggle - The Ultimate 1Million Movies Dataset (TMDB + IMDb)
-- **특징**: (데이터셋의 주요 컬럼 및 특성)
 
 <br />
 
