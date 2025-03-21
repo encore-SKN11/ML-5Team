@@ -375,7 +375,7 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
  
      ![eps_min_samples](./img/eps_min_samples2.png)
     
-	 ✔️ 모든 성능 지표를 종합적으로 분석하여 얻은 최적의 eps와 min_samples 값은 `eps=0.4`, `min_samples=10`
+	✔️ 결론적으로 Silhouette Score와 CH 점수가 모두 높은 eps=0.90, min_samples=5이 최적이라고 판단
 
 	❓ **다양한 성능 지표를 활용한 이유**
 
@@ -432,6 +432,4 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 		- 예를 들어, genre 특성을 director 특성과 관련지었다면, 같은 장르여도 감독이 다른 경우 더 높은 수익을 기록하는 경향을 보일 수도 있음.
    
 - 새로운 데이터가 주어졌을 때 clustering을 시행한 후에, 각 군집에 대응하는 regression 모델을 적응하는 파이프라인 구현 필요
-    
-
     
