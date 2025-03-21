@@ -202,18 +202,24 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 > | **RandomForest**  | 0.68             | 0.69                        |
 > | **XGBoost**       | 0.69             | 0.67                        |
 
-교차 검증에서 **F1-score**가 가장 높았던 **RandomForestClassifier**를 최종 모델로 선정
+F1-score가 비슷했기 때문에, 추가적으로 ROC Curve를 비교하여 최종 모델을 선정하였다.
 
 #### ✅ 평가 지표 선정 이유  
 - **`투자자 관점(Precision)`** : 정밀도 중요
   - 수익성이 없는 영화를 성공으로 잘못 예측(False Positive)하면 큰 손실을 초래할 수 있음
 - **`제작사 관점(Recall)`** : 재현율 중요
   - 성공 가능성이 있는 영화를 실패로 잘못 예측(False Negative)하면 기회를 놓칠 수 있음
-- **`균형적 접근(F1-score)`** : 최종 평가 지표로 사용
+- **`균형적 접근(F1-score)`** : 최종 평가 지표로 사용함
   - Precision과 Recall 간 균형을 맞추기 위함
+- **`AUC`** : 모델이 양성 클래스와 음성 클래스를 얼마나 잘 구별할 수 있는지를 나타내는 지표
+	-  F1-score가 비슷했기 때문에 AUC를 추가적으로 참고하였다.
+    
+#### ✅ ROC-Curve
+   | **RandomForest** | **XGBoost** | 
+   |--------------------------|--------------------|
+   | ![image](./img/rfc_roc.png) |  ![image](./img/xgb_roc.png) |
 
-</br>
-
+F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.86)** 에서 더 높은 성능을 보였기 때문에 최종 모델로 선정되었다.
 </br></br>
 
 
