@@ -261,14 +261,14 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
     ![image](./img/linear_test.png)
 
 - #### Random Forest Regressor
-  - **최적 파라미터** : `n_estimators = 150`,`max_depth = 7` 설정에서 성능 우수
+  - **최적 파라미터** : `n_estimators = 150`,`max_depth = 7` 설정에서 과적합 해소
     - `n_estimators`: 100 ~ 300까지 50단위로 테스트  
     - `max_depth`: 3 ~ 7로 테스트 </br> 
 
-    > | **파라미터** | **n_estimators** | **max_depth** | **결과** |
-    > |---|---|---|---|
-    > | **값** | default | default | ![image](./img/default_randomforest.png) |
-    > |  | 150 | 7 | ![image](./img/tuning_randomforest.png) |
+    > | **파라미터** | **n_estimators** | **max_depth** | **train score** | **test score**|
+    > |---|---|---|---|---|
+    > | **값** | default | default | 0.94 | 0.78 |
+    > |  | 200 | 5 | 0.83 | 0.77 |
 
 - #### Random Forest Regressor 선정 및 결과
   ![image](./img/revenue_by_year_before_covid19.png)
