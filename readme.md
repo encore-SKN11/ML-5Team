@@ -280,6 +280,8 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 
 
 
+
+
 ## 📍 클러스터링 모델
  - 영화 데이터 분석 시에 feature 간의 관계가 비선형적이고 복잡
  - 클러스터링으로 수익과 연관이 있는 특성별로 데이터를 분리한 후, 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음
@@ -302,33 +304,53 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 
 <br/>
 
-### 3. 성능 평가
+### 3. 성능 평가 및 예측 결과
+
 > | **클러스터링 모델** | **평가 지표** | **결과** | 
 > |--------------------------|---------------|---------|
 > | **K-Means** | Silhouette Score | 0.31 | 
 > | **DBSCAN** | Silhouette Score | 0.70 | 
 
+</br>
 
-- K-Means 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가 (*평가 지표는 MSE, R2*)   
-  | **LinearRegression** | **RandomForestRegressor** | 
+#### 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가
+
+- **K-Means + LinearRegression**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
 	|--------------------------|--------------------|
-	| ![image](./img/km+lr.png) |  ![image](./img/km+rf.png) |
+	| ![image](./img/km+lr.png) | ![KMeans_LR](./img/km+lr_pred.png)   |
+
+</br>
+
+- **K-Means + RandomForestRegressor**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
+	|--------------------------|--------------------|
+	| ![image](./img/km+rf.png) | ![KMeans_LR](./img/km+rf_pred.png)   |
+
+</br>
+
+- **DBSCAN + LinearRegression**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
+	|--------------------------|--------------------|
+	| ![image](./img/db+lr.png) | ![KMeans_LR](./img/db+lr_pred.png)   |
+
+</br>
+
+- **DBSCAN + RandomForestRegressor**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
+	|--------------------------|--------------------|
+	| ![image](./img/db+rf.png)| ![KMeans_LR](./img/db+rf_pred.png)   |
+
 <br/>
 
-- DBSCAN 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가 (*평가 지표는 MSE, R2*)
-	| **LinearRegression** | **RandomForestRegressor** | 
-	|--------------------------|----------------------|
-	| ![image](./img/db+lr.png)  |  ![image](./img/db+rf.png) | 
-<br/>
-
-#### 성능 향상을 위해 노력한 점
-- #### 특징 공학 : 차원 축소
+### 4. 성능 향상을 위해 노력한 점
+- #### 특징 공학
   - 다중 레이블로 인코딩된 genres 특성을 포함한 데이터의 차원을 PCA를 통해 주요 3개의 차원으로 축소
 
 	✔️ PCA 결과: 주요 차원이 전체 분산의 약 62%를 차지하므로, 데이터의 복잡성을 줄이는 데 성공
 
 - #### **K-Means** 파라미터 튜닝 
-  - 최적의 파라미터 (`n_clusters`)를 찾기 위해 **Elbow Method**와 **Silhouette Score**를 활용  
+  - 최적의 파라미터 (`n_clusters`)를 찾기 위해 **Elbow Method**(*완만해지는 지점 = 최적의 k*)와 **Silhouette Score**(*높을수록 좋은 성능을 의미*)를 활용  
 
     ![n_clusters](./img/n_clusters.png)  
 
@@ -337,42 +359,42 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 
 	✔️  최적의 클러스터 개수는  **6**
 
+	- 클러스터 시각화
+	
+	  ![img](./img/km_cluster.png)
+  
 - #### **DBSCAN** 파라미터 튜닝
-  - 최적의 파라미터 (`eps`, `min_samples`)를 찾기 위해 **k-거리 정렬**과 **Silhouette Score**를 활용  
-	 
-	 ![eps](./img/k-dist.png)  
-	 ✔️ **eps = 0.9** : 모든  `min_samples`  값에서 가장 높은 실루엣 점수
+  - 최적의 파라미터 (`eps`, `min_samples`)를 찾기 위해 **Silhouette Score**, **Davies-Bouldin Index(DBI)**, **Calinski-Harabasz(CH)** 를 활용
+    (*Silhouette Score 와 CH 값이 높을수록, DBI 값이 낮을수록 클러스터링 성능이 좋다는 것을 의미*) 
  
-     ![eps_min_samples](./img/eps_min_samples.png) 
-	 <br/>✔️ **min_samples = 5~10** : 그래프에서 급격한 변화가 나타나는 지점은 약 **5~10** 근처
+     ![eps_min_samples](./img/eps_min_samples2.png)
+    
+	 ✔️ 모든 성능 지표를 종합적으로 분석하여 얻은 최적의 eps와 min_samples 값은 `eps=0.4`, `min_samples=10`
+
+	❓ **다양한 성능 지표를 활용한 이유**
+
+	Silhouette Score만을 기준으로 최적의 파라미터를 찾았을 때, **클러스터 개수가 2개로 제한되는 문제**가 발생했습니다. 
+	이를 보완하기 위해 **DBI와 CH Score와 같은 추가적인 성능 지표를 활용**하여 더 다양한 클러스터링 결과를 도출할 수 있는 최적의 파라미터를 탐색했습니다. 
+	그러나 여전히 **클러스터 내 샘플 수의 불균형**이 심하게 나타나는 경향을 보입니다.
+
+	- 클러스터 시각화
+		
+	  ![img](./img/db_cluster2.png)
+
 
 <br/>
 
-### 4. 예측 결과
+### 4. 결론
+- 클러스터링을 적용한 후 회귀모델을 학습시키면 더 나은 성능을 보일 것이라고 예측했으나, 실제 결과는 그렇지 않았습니다.
+- 클러스터링 모델의 성능이 회귀모델의 성능에 비례할 것이라고 예상했으나, 이 역시 성립하지 않았습니다.
 
-- #### K-Means 클러스터링을 활용한 수익 예측  
-  - **Linear Regression**    
-    ![KMeans_LR](./img/km+lr_pred.png)  
-  
-  - **Random Forest Regressor**    
-    ![KMeans_RF](./img/km+rf_pred.png)  
+✔️ 회귀모델과 클러스터링 알고리즘 간의 상호작용을 고려하여 하이퍼파라미터 튜닝 및 피처 엔지니어링 개선이 필요하다고 판단됩니다.
+	
+ <br />
 
-- #### DBSCAN 클러스터링을 활용한 수익 예측  
-  - **Linear Regression**    
-    ![DBSCAN_LR](./img/db+lr_pred.png)  
-  
-  - **Random Forest Regressor**    
-    ![DBSCAN_RF](./img/db+rf_pred.png)  
-	 </br>
-
-### 5. 결론
-- 클러스터링을 적용한 후 회귀모델을 학습시키면 더 나은 성능을 보일 것이라고 예측했으나, 실제 결과는 그렇지 않았음.
-- 클러스터링 모델의 성능이 회귀모델의 성능에 비례할 것이라고 예상했으나, 이 역시 성립하지 않았음.
-
-✔️ 회귀모델과 클러스터링 알고리즘 간의 상호작용을 고려하여 하이퍼파라미터 튜닝 및 피처 엔지니어링 개선이 필요하다고 판단
-	 
 ---
-<br /><br />
+
+<br />
 
 
 
