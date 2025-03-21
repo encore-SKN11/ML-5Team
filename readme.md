@@ -261,14 +261,14 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
     ![image](./img/linear_test.png)
 
 - #### Random Forest Regressor
-  - **최적 파라미터** : `n_estimators = 150`,`max_depth = 7` 설정에서 성능 우수
+  - **최적 파라미터** : `n_estimators = 150`,`max_depth = 7` 설정에서 과적합 해소
     - `n_estimators`: 100 ~ 300까지 50단위로 테스트  
     - `max_depth`: 3 ~ 7로 테스트 </br> 
 
-    > | **파라미터** | **n_estimators** | **max_depth** | **결과** |
-    > |---|---|---|---|
-    > | **값** | default | default | ![image](./img/default_randomforest.png) |
-    > |  | 150 | 7 | ![image](./img/tuning_randomforest.png) |
+    > | **파라미터** | **n_estimators** | **max_depth** | **train score** | **test score**|
+    > |---|---|---|---|---|
+    > | **값** | default | default | 0.94 | 0.78 |
+    > |  | 200 | 5 | 0.83 | 0.77 |
 
 - #### Random Forest Regressor 선정 및 결과
   ![image](./img/revenue_by_year_before_covid19.png)
@@ -291,7 +291,8 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 
 
 ## 📍 클러스터링 모델
-- 클러스터링으로 수익 예측에 연관이 있는(`단, 선택된 특성들이 수익에 지나치게 밀접하게 연관된다면 분산이 낮아짐`) 특성별로 데이터를 분리한 후, 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음
+
+- 클러스터링으로 수익 예측에 연관이 있는 특성별로 데이터를 분리한 후, 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음
 
 ### 1. 모델 선정
  - **`K-Means`**
@@ -365,10 +366,9 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 	2. **실루엣 점수 (오른쪽 그래프)**:  k=2에서 가장 높은 점수를 보이지만,  k=6도 비교적 높은 점수를 유지
 
 	✔️  최적의 클러스터 개수는  **6**
+	위의 성능 지표 기준으로 판단한 최적의 파라미터를 설정하였을때, 아래와 같이 클러스터 간의 명확한 구분 기준을 찾기 어려울 정도로 중첩되어 보이는 구간이 많았습니다.
+	임의로 k=3을 지정하였을때 좀 더 나은 분산결과를 볼 수 있었고, 실제 회귀모델에 적용하였을때도 더 나은 결과를 보였습니다.
 
-	- 클러스터 시각화
-	
-	  ![img](./img/km_cluster.png)
   
 - #### **DBSCAN** 파라미터 튜닝
   - 최적의 파라미터 (`eps`, `min_samples`)를 찾기 위해 **Silhouette Score**, **Davies-Bouldin Index(DBI)**, **Calinski-Harabasz(CH)** 를 활용
@@ -376,22 +376,27 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
  
      ![eps_min_samples](./img/eps_min_samples2.png)
     
-	 ✔️ 모든 성능 지표를 종합적으로 분석하여 얻은 최적의 eps와 min_samples 값은 `eps=0.4`, `min_samples=10`
+	✔️ 결론적으로 Silhouette Score와 CH 점수가 모두 높은 eps=0.90, min_samples=5이 최적이라고 판단
 
 	❓ **다양한 성능 지표를 활용한 이유**
 
 	Silhouette Score만을 기준으로 최적의 파라미터를 찾았을 때, **클러스터 개수가 2개로 제한되는 문제**가 발생했습니다. 
 	이를 보완하기 위해 **DBI와 CH Score와 같은 추가적인 성능 지표를 활용**하여 더 다양한 클러스터링 결과를 도출할 수 있는 최적의 파라미터를 탐색했습니다. 
 	그러나 여전히 **클러스터 내 샘플 수의 불균형**이 심하게 나타나는 경향을 보입니다.
-
-	- 클러스터 시각화
 		
-	  ![img](./img/db_cluster2.png)
+	 
 
 
 <br/>
 
 ### 4. 결론
+
+
+  | **K-Means 시각화** | **DBSCAN 시각화** | 
+|--------------------------|--------------------|
+| ![img](./img/km_cluster.png)| ![img](./img/db_cluster2.png)  |
+
+
 - 데이터의 분포를 관찰했을 때, 클러스터링이 무의미한 수준으로 보였습니다.
   - 이는 선택된 특성들이 수익과 지나치게 밀접하게 연관되어 있어, 데이터의 분산이 낮아지고 클러스터 간 차별화가 어려워진 것으로 판단
 
@@ -428,6 +433,4 @@ F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서
 		- 예를 들어, genre 특성을 director 특성과 관련지었다면, 같은 장르여도 감독이 다른 경우 더 높은 수익을 기록하는 경향을 보일 수도 있음.
    
 - 새로운 데이터가 주어졌을 때 clustering을 시행한 후에, 각 군집에 대응하는 regression 모델을 적응하는 파이프라인 구현 필요
-    
-
     
