@@ -191,7 +191,7 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
     ![xgb_eval](img/resized_xgb_evaluation.png)
 </br> 
 
-    > 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행<br/>
+    > 최적화 과정에서 과적합을 줄이기 위해 하이퍼파라미터 튜닝을 수행
     > 초기 모델에 비해 일반화 '성능이 향상'
 
 </br>
@@ -202,18 +202,32 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 > | **RandomForest**  | 0.68             | 0.69                        |
 > | **XGBoost**       | 0.69             | 0.67                        |
 
-교차 검증에서 **F1-score**가 가장 높았던 **RandomForestClassifier**를 최종 모델로 선정
+F1-score가 비슷했기 때문에, 추가적으로 ROC Curve를 비교하여 최종 모델을 선정하였다.
 
 #### ✅ 평가 지표 선정 이유  
 - **`투자자 관점(Precision)`** : 정밀도 중요
   - 수익성이 없는 영화를 성공으로 잘못 예측(False Positive)하면 큰 손실을 초래할 수 있음
 - **`제작사 관점(Recall)`** : 재현율 중요
   - 성공 가능성이 있는 영화를 실패로 잘못 예측(False Negative)하면 기회를 놓칠 수 있음
-- **`균형적 접근(F1-score)`** : 최종 평가 지표로 사용
+- **`균형적 접근(F1-score)`** : 최종 평가 지표로 사용함
   - Precision과 Recall 간 균형을 맞추기 위함
+- **`AUC`** : F1-score가 비슷했기 때문에 AUC를 추가적으로 참고함
+	-  모델이 양성 클래스와 음성 클래스를 얼마나 잘 구별할 수 있는지를 나타내는 지표
+    
+#### ✅ ROC-Curve
+   >| **RandomForest** | **XGBoost** | 
+   >|--------------------------|--------------------|
+   >| ![image](./img/rfc_roc.png) |  ![image](./img/xgb_roc.png) |
 
+F1-score는 두 모델이 비슷하지만, XGBoost가 **ROC AUC (0.806)** 에서 더 높은 성능을 보였기 때문에 최종 모델로 선정되었다.
 </br>
 
+✔️ 정리
+- **하이퍼파라미터 튜닝의 중요성**  
+  하이퍼파라미터 튜닝은 과적합을 방지하고 모델의 일반화 성능을 향상시키는 데 중요한 역할을 했음
+
+- **XGBoost**  
+  작은 학습률로 많은 반복 학습을 통해 모델의 안정성과 성능을 향상시킬 수 있어, 흥행 분류와 같은 **정확도가 중요한** 작업에서 효과적인 성능을 발휘할 수 있음
 </br></br>
 
 
@@ -274,9 +288,10 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 
 
+
+
 ## 📍 클러스터링 모델
- - 영화 데이터 분석 시에 feature 간의 관계가 비선형적이고 복잡
- - 클러스터링으로 수익과 연관이 있는 특성별로 데이터를 분리한 후, 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음
+- 클러스터링으로 수익 예측에 연관이 있는(`단, 선택된 특성들이 수익에 지나치게 밀접하게 연관된다면 분산이 낮아짐`) 특성별로 데이터를 분리한 후, 개별 회귀 모델을 생성하면 예측 정확도가 높아질 가능성이 있음
 
 ### 1. 모델 선정
  - **`K-Means`**
@@ -296,33 +311,53 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 <br/>
 
-### 3. 성능 평가
+### 3. 성능 평가 및 예측 결과
+
 > | **클러스터링 모델** | **평가 지표** | **결과** | 
 > |--------------------------|---------------|---------|
 > | **K-Means** | Silhouette Score | 0.31 | 
 > | **DBSCAN** | Silhouette Score | 0.70 | 
 
+</br>
 
-- K-Means 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가 (*평가 지표는 MSE, R2*)   
-  | **LinearRegression** | **RandomForestRegressor** | 
+#### 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가
+
+- **K-Means + LinearRegression**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
 	|--------------------------|--------------------|
-	| ![image](./img/km+lr.png) |  ![image](./img/km+rf.png) |
+	| ![image](./img/km+lr.png) | ![KMeans_LR](./img/km+lr_pred.png)   |
+
+</br>
+
+- **K-Means + RandomForestRegressor**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
+	|--------------------------|--------------------|
+	| ![image](./img/km+rf.png) | ![KMeans_LR](./img/km+rf_pred.png)   |
+
+</br>
+
+- **DBSCAN + LinearRegression**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
+	|--------------------------|--------------------|
+	| ![image](./img/db+lr.png) | ![KMeans_LR](./img/db+lr_pred.png)   |
+
+</br>
+
+- **DBSCAN + RandomForestRegressor**
+  | **MSE, R2** | **Actual vs Predicted Revenue** | 
+	|--------------------------|--------------------|
+	| ![image](./img/db+rf.png)| ![KMeans_LR](./img/db+rf_pred.png)   |
+
 <br/>
 
-- DBSCAN 클러스터링을 활용하여 수익 예측 회귀 모델의 성능을 평가 (*평가 지표는 MSE, R2*)
-	| **LinearRegression** | **RandomForestRegressor** | 
-	|--------------------------|----------------------|
-	| ![image](./img/db+lr.png)  |  ![image](./img/db+rf.png) | 
-<br/>
-
-#### 성능 향상을 위해 노력한 점
-- #### 특징 공학 : 차원 축소
+### 4. 성능 향상을 위해 노력한 점
+- #### 특징 공학
   - 다중 레이블로 인코딩된 genres 특성을 포함한 데이터의 차원을 PCA를 통해 주요 3개의 차원으로 축소
 
 	✔️ PCA 결과: 주요 차원이 전체 분산의 약 62%를 차지하므로, 데이터의 복잡성을 줄이는 데 성공
 
 - #### **K-Means** 파라미터 튜닝 
-  - 최적의 파라미터 (`n_clusters`)를 찾기 위해 **Elbow Method**와 **Silhouette Score**를 활용  
+  - 최적의 파라미터 (`n_clusters`)를 찾기 위해 **Elbow Method**(*완만해지는 지점 = 최적의 k*)와 **Silhouette Score**(*높을수록 좋은 성능을 의미*)를 활용  
 
     ![n_clusters](./img/n_clusters.png)  
 
@@ -331,58 +366,68 @@ df.drop(['id','title','ROI','cast','director','adjusted_revenue','adjusted_budge
 
 	✔️  최적의 클러스터 개수는  **6**
 
+	- 클러스터 시각화
+	
+	  ![img](./img/km_cluster.png)
+  
 - #### **DBSCAN** 파라미터 튜닝
-  - 최적의 파라미터 (`eps`, `min_samples`)를 찾기 위해 **k-거리 정렬**과 **Silhouette Score**를 활용  
-	 
-	 ![eps](./img/k-dist.png)  
-	 ✔️ **eps = 0.9** : 모든  `min_samples`  값에서 가장 높은 실루엣 점수
+  - 최적의 파라미터 (`eps`, `min_samples`)를 찾기 위해 **Silhouette Score**, **Davies-Bouldin Index(DBI)**, **Calinski-Harabasz(CH)** 를 활용
+    (*Silhouette Score 와 CH 값이 높을수록, DBI 값이 낮을수록 클러스터링 성능이 좋다는 것을 의미*) 
  
-     ![eps_min_samples](./img/eps_min_samples.png) 
-	 <br/>✔️ **min_samples = 5~10** : 그래프에서 급격한 변화가 나타나는 지점은 약 **5~10** 근처
+     ![eps_min_samples](./img/eps_min_samples2.png)
+    
+	 ✔️ 모든 성능 지표를 종합적으로 분석하여 얻은 최적의 eps와 min_samples 값은 `eps=0.4`, `min_samples=10`
+
+	❓ **다양한 성능 지표를 활용한 이유**
+
+	Silhouette Score만을 기준으로 최적의 파라미터를 찾았을 때, **클러스터 개수가 2개로 제한되는 문제**가 발생했습니다. 
+	이를 보완하기 위해 **DBI와 CH Score와 같은 추가적인 성능 지표를 활용**하여 더 다양한 클러스터링 결과를 도출할 수 있는 최적의 파라미터를 탐색했습니다. 
+	그러나 여전히 **클러스터 내 샘플 수의 불균형**이 심하게 나타나는 경향을 보입니다.
+
+	- 클러스터 시각화
+		
+	  ![img](./img/db_cluster2.png)
+
 
 <br/>
 
-### 4. 예측 결과
+### 4. 결론
+- 데이터의 분포를 관찰했을 때, 클러스터링이 무의미한 수준으로 보였습니다.
+  - 이는 선택된 특성들이 수익과 지나치게 밀접하게 연관되어 있어, 데이터의 분산이 낮아지고 클러스터 간 차별화가 어려워진 것으로 판단
 
-- #### K-Means 클러스터링을 활용한 수익 예측  
-  - **Linear Regression**    
-    ![KMeans_LR](./img/km+lr_pred.png)  
-  
-  - **Random Forest Regressor**    
-    ![KMeans_RF](./img/km+rf_pred.png)  
+- 클러스터링 성능 지표를 활용하여 튜닝을 시도했으나, 인간의 직관과는 상반된 결과를 나타냄
+    - k-means의 경우, 클러스터 간의 명확한 구분 기준을 찾기 어려울 정도로 중첩되어 보이는 구간이 많음.
+    - DBSCAN의 경우, 데이터의 밀집도를 기준으로 clustering을 시행하기 때문에, 클러스터의 갯수가 적은게 당연하다고 판단(*굳이 클러스터 갯수를 늘릴 필요가 없었음..*)
 
-- #### DBSCAN 클러스터링을 활용한 수익 예측  
-  - **Linear Regression**    
-    ![DBSCAN_LR](./img/db+lr_pred.png)  
-  
-  - **Random Forest Regressor**    
-    ![DBSCAN_RF](./img/db+rf_pred.png)  
-	 </br>
+*유의미한 클러스터링은 아니라고 판단되지만 그래도 회귀모델에 적용 했을때의 결론..*
+- 클러스터링을 적용한 후 회귀모델을 학습시키면 더 나은 성능을 보일 것이라고 예측했으나, 실제 결과는 그렇지 않았습니다.
+- 클러스터링 모델의 성능이 회귀모델의 성능에 비례할 것이라고 예상했으나, 이 역시 성립하지 않았습니다.
 
-### 5. 결론
-- 클러스터링을 적용한 후 회귀모델을 학습시키면 더 나은 성능을 보일 것이라고 예측했으나, 실제 결과는 그렇지 않았음.
-- 클러스터링 모델의 성능이 회귀모델의 성능에 비례할 것이라고 예상했으나, 이 역시 성립하지 않았음.
+ <br />
 
-✔️ 회귀모델과 클러스터링 알고리즘 간의 상호작용을 고려하여 하이퍼파라미터 튜닝 및 피처 엔지니어링 개선이 필요하다고 판단
-	 
 ---
-<br /><br />
+
+<br />
 
 
 
-## 🚀 결론 및 향후 개선 방향
-- (프로젝트에서 얻은 주요 인사이트)
+## 🔨 프로젝트 개선점
 
-### 프로젝트 개선점
+- 더 많은 feature를 학습에 사용하기
+  - 후술할 모든 개선점의 시발점. 학습에 사용된 특성 선택을 **직관에 따라** 극히 일부로 제한했는데, `SelectKBest` 모듈을 사용하여 모든 특성이 각각 Label Data와 어느 정도의 연관성을 갖는지 수치화하여, 상위 특성들을 남기는 방법들을 사용할 수도 있음.
 
+- 특성 전처리 과정 개선하기
+  - `budget` 특성과, 목표 데이터에 해당하는 `revenue` 의 단위가 유독 크고 한쪽으로 치우친 경향을 보이기 때문에, 해당 특성들에 로그 변환을 가해주면 추가적인 성능 향상을 기대할 수 있음.
+    
 - 개봉 전에 알 수 있는 특성만으로 학습하기
   - 프로젝트에서 사용한 `vote_count`, `popularity` 등의 특성은 개봉을 해야만 알 수 있음.
-  - 따라서 프로젝트의 목표인 '개봉 전'을 상정한 모델이라면 그러한 것들이 없는 상태에서도 예측을 할 수 있어야 함.
- 
-- 특성 전처리 개선
-  - `budget`, `revenue` 이 한쪽으로 치우친 경향을 보이기 때문에, 해당 특성들에 로그 변환을 가해주면 추가적인 성능 향상을 기대할 수 있음.
-  - 학습에 사용된 특성 선택을 직관에 따라 극히 일부로 제한했는데, `SelectKBest` 모듈을 사용하여 모든 특성이 각각 Label Data와 어느 정도의 연관성을 갖는지 수치화하여, 상위 특성들을 남기는 방법들을 사용할 수도 있음.
- 
-- 군집화된 데이터의 특성 파악
-   - (아침에 작성함 -이상준-)
+  - 따라서 '개봉 전'을 상정하고, 개봉 전에 알 수 있는 특성만으로 모델 학습을 하는 것도 좋은 개선방안임.
+
+- 클러스터링의 유의미성 찾기
+	- 기존 데이터에서 사용하지 않은 특성을 새롭게 추가하거나, 수익과의 관련성이 낮은 특성들을 조합하여 클러스터링 성능 향상을 기대할 수 있음.
+		- 예를 들어, genre 특성을 director 특성과 관련지었다면, 같은 장르여도 감독이 다른 경우 더 높은 수익을 기록하는 경향을 보일 수도 있음.
+   
+- 새로운 데이터가 주어졌을 때 clustering을 시행한 후에, 각 군집에 대응하는 regression 모델을 적응하는 파이프라인 구현 필요
+    
+
     
